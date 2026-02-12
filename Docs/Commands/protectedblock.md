@@ -1,10 +1,11 @@
 # Protectedblock Command
 
 > [!IMPORTANT]
-> **protectedblock** (add | remove | check) \<target> \<block>
+> **protectedblock** (add | remove | check) \<target> \<block><br>
 > **protectedblock** (list) \<target>
 
-The protectblock command is used to disable players from breaking certain blocks, this list is stored per-player, so different players can have different block break "permissions"
+The protectblock command is used to disable players from breaking certain blocks,<br>
+this list is stored per-player, so different players can have different block break "permissions"
 
 ---
 ### (ADD | REMOVE | CHECK | LIST)
@@ -19,7 +20,7 @@ The protectblock command is used to disable players from breaking certain blocks
 >
 > For example. If a player has *"#minecraft:logs"* protected running 
 >
->>*/protectedblock check \<player> minecraft:oak_log*
+> *`/protectedblock check \<player> minecraft:oak_log`*
 >
 > will return 1 (meaning protected) even if *"minecraft:oak_log"* was not explicitly in the protectedblock list
 

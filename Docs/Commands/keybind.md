@@ -1,5 +1,6 @@
 # Keybind Command
 
+> [!IMPORTANT]
 > **keybind** (add) \<name> \<key> \<function> (ON_TRUE | WHILE_TRUE | ON_FALSE | WHILE_FALSE)<br>
 > **keybind** (remove) \<name><br>
 > **keybind** (list)
