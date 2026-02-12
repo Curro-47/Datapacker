@@ -1,6 +1,6 @@
 # Protectedblock Command
 
-> [!IMPORTANT] Syntax
+> [!IMPORTANT]
 > **protectedblock** (add | remove | check) \<target> \<block>
 > **protectedblock** (list) \<target>
 
@@ -14,7 +14,7 @@ The protectblock command is used to disable players from breaking certain blocks
 **check** : Checks if a player has a certain block or block tag protected, returns 1 if protected, 0 if not<br>
 **list** : Lists all of a players protectedblocks, returns the length of that list
 
-> [!NOTE] Note (CHECK)
+> [!NOTE]
 > When using **check** with a block it also checks if that block is within a protected block-tag<br>
 >
 > For example. If a player has *"#minecraft:logs"* protected running 
