@@ -5,7 +5,7 @@
 
 Plays an animation on an armor stand from a .json file in a datapack
 
-More info on the file and folder structure in [Animation](../Systems/Animation)
+More info on the file and folder structure in [Animation](../Systems/Animation.md)
 
 ---
 ### \<TARGET>
