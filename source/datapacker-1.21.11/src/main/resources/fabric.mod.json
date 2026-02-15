@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "datapacker",
+	"version": "${0.0}",
+	"name": "Datapacker",
+	"description": "A mod that adds more functionality to mods and datapacks whilst staying fully server-side",
+	"authors": [
+		"CK47"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/datapacker/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"ck47.datapacker.Datapacker"
+		],
+        "client": [
+            "ck47.datapacker.DatapackerClient"
+        ],
+		"fabric-datagen": [
+			"ck47.datapacker.DatapackerDataGenerator"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.17.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": ">=0.141.0"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
