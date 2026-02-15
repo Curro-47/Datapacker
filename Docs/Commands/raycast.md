@@ -1,15 +1,15 @@
 # Raycast Command
 
 > [!IMPORTANT]
-> **raycast** \<distance> "ray" "out"
+> `raycast <distance> "ray" "out"`
 >
 > **"ray"**<br>
-> (block) (collider|outline|visual) (all|source|none)<br>
-> (entity) \<target entities>
+> `(block) (collider|outline|visual) (all|source|none)`<br>
+> `(entity) <target entities>`
 >
 > **"out"**<br>
-> (store) \<storage> \<path> *[ (function) \<function> ]*<br>
-> (function) \<function> *[ (store) \<storage> \<path> ]*
+> `(store) <storage> <path> [ (function) \<function> ]`<br>
+> `(function) \<function> [ (store) \<storage> \<path> ]`
 
 The raycast command, when used, creates a raycast from the executing entities pov (crosshair), which travels in a straight line forwards,<br>
 detecting either a block or entity as specified<br>
@@ -34,16 +34,16 @@ it will keep moving until reaching its max distance or colliding with something,
 
 > ---
 > ### (COLLIDER | OUTLINE | VISUAL)
-> **COLLIDER** : Only detects blocks with collisions (no grass, flowers, rails, etc)<br>
-> **OUTLINE** : Detects all blocks on their outline<br>
-> **VISUAL** : Detects the visual part of the block (I dont understand this one as well, but usually used for rendering and stuff)
+> `COLLIDER` : Only detects blocks with collisions (no grass, flowers, rails, etc)<br>
+> `OUTLINE` : Detects all blocks on their outline<br>
+> `VISUAL` : Detects the visual part of the block (I dont understand this one as well, but usually used for rendering and stuff)
 >
 > ---
 > ### (ALL | SOURCE | NONE)
 > How it interacts with fluids<br>
-> **ALL** : Detects all fluids<br>
-> **SOURCE** : Only detects fluid source blocks<br>
-> **NONE** : Ignore fluids, treat them as air<br>
+> `ALL` : Detects all fluids<br>
+> `SOURCE` : Only detects fluid source blocks<br>
+> `NONE` : Ignore fluids, treat them as air<br>
 > 
 > ---
 
@@ -88,23 +88,23 @@ Stores the resulting data inside of an nbt storage
 The following data will be stored:
 
 **BLOCK RAYCAST**
-- **x** : block x position (int)
-- **y** : block y position (int)
-- **z** : block z position (int)
-- **hit** : 1 if the raycast was successful, 0 if it was not
-- **distance** : distance between the start and finish of the raycast (double), if the raycast failed then the distance will be the maximum distance
-- **name** : name of the block
+- `x` : block x position (int)
+- `y` : block y position (int)
+- `z` : block z position (int)
+- `hit` : 1 if the raycast was successful, 0 if it was not
+- `distance` : distance between the start and finish of the raycast (double), if the raycast failed then the distance will be the maximum distance
+- `name` : name of the block
 
 <br />
 
 **ENTITY RAYCAST**
-- **x** : hit x position (double)
-- **y** : hit y position (double)
-- **z** : hit z position (double)
-- **hit** : 1 if the raycast was successful, 0 if it was not
-- **distance** : distance between the start and finish of the raycast (double), if the raycast failed then the distance will be the maximum distance
-- **name** : name of the hit entity
-- **type** : type of the hit entity
+- `x` : hit x position (double)
+- `y` : hit y position (double)
+- `z` : hit z position (double)
+- `hit` : 1 if the raycast was successful, 0 if it was not
+- `distance` : distance between the start and finish of the raycast (double), if the raycast failed then the distance will be the maximum distance
+- `name` : name of the hit entity
+- `type` : type of the hit entity
 
 ---
 

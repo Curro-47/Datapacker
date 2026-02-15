@@ -1,9 +1,9 @@
 # Keybind Command
 
 > [!IMPORTANT]
-> **keybind** (add) \<name> \<key> \<function> (ON_TRUE | WHILE_TRUE | ON_FALSE | WHILE_FALSE)<br>
-> **keybind** (remove) \<name><br>
-> **keybind** (list)
+> `/keybind (add) <name> <key> <function> (ON_TRUE | WHILE_TRUE | ON_FALSE | WHILE_FALSE)`<br>
+> `/keybind (remove) <name>`<br>
+> `/keybind (list)`
 
 The keybind command is used to add, remove and list custom keybinds from players.
 
@@ -16,9 +16,9 @@ The keybind command is used to add, remove and list custom keybinds from players
 
 As each name implies:<br>
 
-**add** : creates a new keybind<br>
-**remove** : eliminates an existing keybind<br>
-**list** : lists all current existing keybinds
+`add` : creates a new keybind<br>
+`remove` : eliminates an existing keybind<br>
+`list` : lists all current existing keybinds
 
 ---
 ### \< NAME >
@@ -45,7 +45,7 @@ It will only execute if the condition specified is fulfilled this frame
 
 This is the condition that must be fulfilled for the function to execute
 
-**ON_TRUE** : The function executes *ONCE* when the key is *PRESSED*<br>
-**WHILE_TRUE** : The function executes *EVERY FRAME* the key is *PRESSED*<br>
-**ON_FALSE** : The function executes *ONCE* when the key is *RELEASED*<br>
-**WHILE_FALSE** : The function executes *EVERY FRAME* the key is *RELEASED*
+`ON_TRUE` : The function executes *ONCE* when the key is *PRESSED*<br>
+`WHILE_TRUE` : The function executes *EVERY FRAME* the key is *PRESSED*<br>
+`ON_FALSE` : The function executes *ONCE* when the key is *RELEASED*<br>
+`WHILE_FALSE` : The function executes *EVERY FRAME* the key is *RELEASED*

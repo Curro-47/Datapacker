@@ -1,8 +1,8 @@
 # Protectedblock Command
 
 > [!IMPORTANT]
-> **protectedblock** (add | remove | check) \<target> \<block><br>
-> **protectedblock** (list) \<target>
+> `protectedblock (add | remove | check) <target> <block>`<br>
+> `protectedblock (list) <target>`
 
 The protectblock command is used to disable players from breaking certain blocks,<br>
 this list is stored per-player, so different players can have different block break "permissions"
@@ -10,13 +10,13 @@ this list is stored per-player, so different players can have different block br
 ---
 ### (ADD | REMOVE | CHECK | LIST)
 
-**add** : Adds a block or block-tag to a player's protectedblock list<br>
-**remove** : Removes a block or block-tag from a player's protectedblock list<br>
-**check** : Checks if a player has a certain block or block tag protected, returns 1 if protected, 0 if not<br>
-**list** : Lists all of a players protectedblocks, returns the length of that list
+`add` : Adds a block or block-tag to a player's protectedblock list<br>
+`remove` : Removes a block or block-tag from a player's protectedblock list<br>
+`check` : Checks if a player has a certain block or block tag protected, returns 1 if protected, 0 if not<br>
+`list` : Lists all of a players protectedblocks, returns the length of that list
 
 > [!NOTE]
-> When using **check** with a block it also checks if that block is within a protected block-tag<br>
+> When using `check` with a block it also checks if that block is within a protected block-tag<br>
 >
 > For example. If a player has *"#minecraft:logs"* protected running 
 >
@@ -27,9 +27,9 @@ this list is stored per-player, so different players can have different block br
 ---
 ### \<TARGET>
 
-The player (or players) which you want to (add | remeove | check | list) a keybind from
+The player (or players) which you want to `(add | remeove | check | list)` a keybind from
 
 ---
 ### \<BLOCK>
 
-The block or block-tag (list of blocks) you want to (add | remeove | check | list)
+The block or block-tag (list of blocks) you want to `(add | remeove | check | list)`
