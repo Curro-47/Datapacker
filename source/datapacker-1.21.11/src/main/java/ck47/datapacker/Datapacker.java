@@ -1,8 +1,6 @@
 package ck47.datapacker;
 
-import ck47.datapacker.command.AnimationCommand;
-import ck47.datapacker.command.KeybindCommand;
-import ck47.datapacker.command.ProtectBlockCommand;
+import ck47.datapacker.command.*;
 import ck47.datapacker.system.animation.AnimationLoader;
 import ck47.datapacker.system.animation.AnimationManager;
 import ck47.datapacker.system.keybind.KeyListPayload;
@@ -20,11 +18,11 @@ import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ck47.datapacker.command.RaycastCommand;
 import ck47.datapacker.system.protected_blocks.ProtectedBlocks;
 
 public class Datapacker implements ModInitializer {
@@ -45,6 +43,7 @@ public class Datapacker implements ModInitializer {
         new ProtectBlockCommand().register();
         new KeybindCommand().register();
         new AnimationCommand().register();
+        new VelocityCommand().register();
         KeybindManager.Register();
 
         ProtectedBlocks.Register();

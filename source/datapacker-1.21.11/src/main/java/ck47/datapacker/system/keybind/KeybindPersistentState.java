@@ -3,6 +3,7 @@ package ck47.datapacker.system.keybind;
 import ck47.datapacker.util.KeybindData;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.PersistentState;
@@ -22,19 +23,19 @@ public class KeybindPersistentState extends PersistentState {
     }
 
     public void add(Identifier name, KeybindData data) {
-        keybindMap.put(name, data);
         markDirty();
+        keybindMap.put(name, data);
     }
 
     public void remove(Identifier name) {
-        keybindMap.remove(name);
         markDirty();
+        keybindMap.remove(name);
     }
 
     /* ---------------------------------------------- ACCESS ----------------------------------------*/
 
-    public static KeybindPersistentState get(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(TYPE);
+    public static KeybindPersistentState get(MinecraftServer server) {
+        return server.getOverworld().getPersistentStateManager().getOrCreate(TYPE);
     }
 
     public static final Codec<KeybindPersistentState> CODEC =

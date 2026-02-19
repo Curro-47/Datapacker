@@ -74,7 +74,7 @@ public class KeybindCommand implements Command<ServerCommandSource> {
     }
 
     private int ListKeybinds(CommandContext<ServerCommandSource> context) {
-        KeybindPersistentState keybindState = KeybindPersistentState.get(context.getSource().getWorld());
+        KeybindPersistentState keybindState = KeybindPersistentState.get(context.getSource().getServer());
         Map<Identifier, KeybindData> keybindMap = keybindState.getKeybindMap();
 
         Set<Identifier> ids = KeybindManager.GetKeybindMap(context.getSource().getServer()).keySet();
@@ -94,7 +94,7 @@ public class KeybindCommand implements Command<ServerCommandSource> {
             /// Main node
             LiteralCommandNode<ServerCommandSource> keybindNode = CommandManager
                     .literal("keybind")
-                    .requires(source -> source.getPermissions().hasPermission(new Permission.Level(PermissionLevel.MODERATORS)))
+                    .requires(source -> source.getPermissions().hasPermission(new Permission.Level(PermissionLevel.GAMEMASTERS)))
                     .build();
 
             /// Add and Remove

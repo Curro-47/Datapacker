@@ -10,6 +10,8 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.block.Block;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.RegistryEntryPredicateArgumentType;
+import net.minecraft.command.permission.Permission;
+import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -26,46 +28,61 @@ import java.util.stream.Collectors;
 public class ProtectBlockCommand implements Command<ServerCommandSource> {
     @Override
     public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "target");
-        assert players != null;
-
         // Get the command nodes as a list
         List<String> path = context.getNodes()
                 .stream()
                 .map(node -> node.getNode().getName())
                 .toList();
 
-        // Loop through players in the selector
-        for (ServerPlayerEntity player: players) {
-            UUID uuid = player.getUuid();
+        try {
+            Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "target");
 
-            if (path.contains("list")) return list(context, uuid);
+            // Loop through players in the selector
+            for (ServerPlayerEntity player: players) {
+                UUID uuid = player.getUuid();
 
-            // For every other option get BlockSelector
-            var entryPredicate = RegistryEntryPredicateArgumentType.getRegistryEntryPredicate(context, "block", RegistryKeys.BLOCK)
-                    .getEntry();
-            BlockSelector selector = null;
-            if (entryPredicate.left().isPresent()) selector = new BlockSelector.Block(entryPredicate.left().get().registryKey());
-            else if (entryPredicate.right().isPresent()) selector = new BlockSelector.Tag(entryPredicate.right().get().getTag());
+                if (path.contains("list")) return listPlayer(context, uuid);
 
-            if (path.contains("add")) ProtectedBlocks.Add(uuid, selector, context.getSource().getWorld());
-            else if (path.contains("remove")) ProtectedBlocks.Remove(uuid, selector, context.getSource().getWorld());
-            else if (path.contains("check")) return check(context, uuid, selector);
+                // For every other option get BlockSelector
+                var entryPredicate = RegistryEntryPredicateArgumentType.getRegistryEntryPredicate(context, "block", RegistryKeys.BLOCK)
+                        .getEntry();
+                BlockSelector selector = null;
+                if (entryPredicate.left().isPresent()) selector = new BlockSelector.Block(entryPredicate.left().get().registryKey());
+                else if (entryPredicate.right().isPresent()) selector = new BlockSelector.Tag(entryPredicate.right().get().getTag());
+
+                if (path.contains("add")) ProtectedBlocks.Add(uuid, selector, context.getSource().getServer());
+                else if (path.contains("remove")) ProtectedBlocks.Remove(uuid, selector, context.getSource().getServer());
+                else if (path.contains("check")) return check(context, uuid, selector);
+            }
+        }
+        catch (IllegalArgumentException e) {
+            return listAll(context);
         }
 
         return 0;
     }
 
-    private int list(CommandContext<ServerCommandSource> context, UUID uuid) {
-        Set<String> ids = ProtectedBlocks.GetProtected(uuid, context.getSource().getWorld()).stream()
+    private int listPlayer(CommandContext<ServerCommandSource> context, UUID uuid) {
+        Set<String> ids = ProtectedBlocks.GetProtected(uuid, context.getSource().getServer()).stream()
                 .map(BlockSelector::getName)
                 .collect(Collectors.toSet());
         context.getSource().sendFeedback(() -> Text.literal(String.join(", ", ids)), false);
         return ids.size();
     }
 
+    private int listAll(CommandContext<ServerCommandSource> context) {
+        for (Map.Entry<UUID, Set<BlockSelector>> kvp : ProtectedBlocks.GetAllProtected(context.getSource().getServer()).entrySet()) {
+            UUID uuid = kvp.getKey();
+            Set<String> names = kvp.getValue().stream().map(BlockSelector::getName).collect(Collectors.toSet());
+
+            context.getSource().sendFeedback(() -> Text.literal(uuid.toString() + " : " + String.join(", ", names)), false);
+        }
+
+        return 0;
+    }
+
     private int check(CommandContext<ServerCommandSource> context, UUID uuid, BlockSelector selector) {
-        if (ProtectedBlocks.IsProtected(uuid, selector, context.getSource().getWorld())) return 1;
+        if (ProtectedBlocks.IsProtected(uuid, selector, context.getSource().getServer())) return 1;
 
         // If selector is BLOCK and is detectable by any selector TAG of the player
         if (selector instanceof BlockSelector.Block blockSelector) {
@@ -73,7 +90,7 @@ public class ProtectBlockCommand implements Command<ServerCommandSource> {
             RegistryWrapper.WrapperLookup wrapperLookup = context.getSource().getWorld().getRegistryManager();
             RegistryEntry<Block> entry = wrapperLookup.getEntryOrThrow(RegistryKeys.BLOCK).value().getOrThrow(blockSelector.key());
 
-            boolean isInATag = ProtectedBlocks.IsProtected(uuid, entry, context.getSource().getWorld());
+            boolean isInATag = ProtectedBlocks.IsProtected(uuid, entry, context.getSource().getServer());
             if (isInATag) return 1;
         }
 
@@ -85,6 +102,7 @@ public class ProtectBlockCommand implements Command<ServerCommandSource> {
             /// PROTECT BLOCK COMMAND
             LiteralCommandNode<ServerCommandSource> protectBlockNode = CommandManager
                     .literal("protectblock")
+                    .requires(source -> source.getPermissions().hasPermission(new Permission.Level(PermissionLevel.GAMEMASTERS)))
                     .build();
 
             LiteralCommandNode<ServerCommandSource> protectBlockAddNode = CommandManager
@@ -97,6 +115,7 @@ public class ProtectBlockCommand implements Command<ServerCommandSource> {
 
             LiteralCommandNode<ServerCommandSource> protectBlockListNode = CommandManager
                     .literal("list")
+                    .executes(this)
                     .build();
 
             LiteralCommandNode<ServerCommandSource> protectBlockCheckNode = CommandManager
@@ -109,12 +128,12 @@ public class ProtectBlockCommand implements Command<ServerCommandSource> {
 
             ArgumentCommandNode<ServerCommandSource, ?> protectBlockListPlayerNode = CommandManager
                     .argument("target", EntityArgumentType.players())
-                    .executes(new ProtectBlockCommand())
+                    .executes(this)
                     .build();
 
             ArgumentCommandNode<ServerCommandSource, ?> protectBlockPredicateNode = CommandManager
                     .argument("block", RegistryEntryPredicateArgumentType.registryEntryPredicate(registryAccess, RegistryKeys.BLOCK))
-                    .executes(new ProtectBlockCommand())
+                    .executes(this)
                     .build();
 
             dispatcher.getRoot().addChild(protectBlockNode);

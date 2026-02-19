@@ -39,7 +39,9 @@ The json structure is as follows
 `loop`: If the animation should loop or not, if false it will never repeat, if true it will repeat until overwritten<br>
 `loop_start`: if loop is true, the next loops will start on this frame<br>
 
-`<bone_name>`: what bone will be animated, the bones an armor stand has are: **head, body, left_arm, right_arm, left_leg, right_leg**
+`<bone_name>`: what bone will be animated, the bones an armor stand has are: **head, body, left_arm, right_arm, left_leg, right_leg, rotation**
+
+> Armor stand rotation counts as a bone, its called "rotation", and only the x value is taken into account, y and z are ignored
 
 `<keyframe>`: on what frame this position will be on the selected bone
 

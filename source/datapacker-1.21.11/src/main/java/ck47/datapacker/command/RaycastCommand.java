@@ -13,6 +13,7 @@ import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
+import net.minecraft.command.permission.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.*;
@@ -29,12 +30,16 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class RaycastCommand implements Command<ServerCommandSource> {
+    private static final Logger log = LoggerFactory.getLogger(RaycastCommand.class);
+
     @Override
     public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         /// Setup variables
@@ -91,7 +96,8 @@ public class RaycastCommand implements Command<ServerCommandSource> {
             manager.execute(function,
                     context.getSource()
                     .withPosition(hitResult.getPos())
-                    .withLookingAt(hitResult.getPos().add(lookVec)));
+                    .withLookingAt(hitResult.getPos().add(lookVec))
+                    .withPermissions(LeveledPermissionPredicate.GAMEMASTERS));
         }
     }
 
@@ -140,7 +146,8 @@ public class RaycastCommand implements Command<ServerCommandSource> {
             manager.execute(function,
                     hitResult.getEntity().getCommandSource(context.getSource().getWorld())
                             .withPosition(hitResult.getPos())
-                            .withLookingAt(hitResult.getPos().add(lookVec)));
+                            .withLookingAt(hitResult.getPos().add(lookVec))
+                            .withPermissions(LeveledPermissionPredicate.GAMEMASTERS));
         }
     }
 
@@ -174,6 +181,7 @@ public class RaycastCommand implements Command<ServerCommandSource> {
             /// RAYCAST COMMAND
             LiteralCommandNode<ServerCommandSource> raycastNode = CommandManager
                     .literal("raycast")
+                    .requires(source -> source.getPermissions().hasPermission(new Permission.Level(PermissionLevel.GAMEMASTERS)))
                     .build();
 
             ArgumentCommandNode<ServerCommandSource, ?> raycastDistanceNode = CommandManager

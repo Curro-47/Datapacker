@@ -25,8 +25,16 @@ public class AnimationManager {
         );
 
         for (ArmorStandEntity entity : entityCollection) {
-            animationDataMap.put(entity, new AnimationReference(animPath, 0));
+            stop(entity);
+            animationDataMap.put(entity, new AnimationReference(animPath, entity.getYaw(), 0));
         }
+    }
+
+    public static void stop(ArmorStandEntity entity) {
+        if (animationDataMap.get(entity) == null) return;
+
+        entity.setYaw(animationDataMap.get(entity).startRotation);
+        animationDataMap.remove(entity);
     }
 
     public static void tick() {
@@ -43,6 +51,7 @@ public class AnimationManager {
             moveBone("left_arm", animation, reference, entity);
             moveBone("right_leg", animation, reference, entity);
             moveBone("left_leg", animation, reference, entity);
+            rotate(animation, reference, entity);
 
             reference.tick += 1;
             if (reference.tick > animation.duration() && !animation.loop()) animationDataMap.remove(entity);
@@ -77,5 +86,24 @@ public class AnimationManager {
         if (boneName.equals("right_leg")) entity.setRightLegRotation(new EulerAngle(currentPos.x, currentPos.y, currentPos.z));
         if (boneName.equals("left_leg")) entity.setLeftLegRotation(new EulerAngle(currentPos.x, currentPos.y, currentPos.z));
 
+    }
+
+    private static void rotate(AnimationData animation, AnimationReference reference, ArmorStandEntity entity) {
+        AnimationBone bone = animation.bones().get("rotation");
+        if (bone == null) return;
+
+        int lastFrame = bone.closestPastKey(reference.tick);
+        int nextFrame = bone.closestFutureKey(reference.tick);
+        if (lastFrame < 0 || nextFrame < 0) return;
+
+        float lerpIndex = (float)(reference.tick - lastFrame) / (float)(nextFrame - lastFrame); // 0..1 on where the current tick is
+        if (lastFrame == nextFrame) lerpIndex = 0;
+
+        float lastPos = bone.keyframeMap().get(lastFrame).x + reference.startRotation;
+        float nextPos = bone.keyframeMap().get(nextFrame).x + reference.startRotation;
+
+        float currentRotation = lastPos + lerpIndex*(nextPos - lastPos);
+
+        entity.setYaw(currentRotation);
     }
 }
