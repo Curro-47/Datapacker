@@ -52,12 +52,12 @@ public class RaycastCommand implements Command<ServerCommandSource> {
                 .map(node -> node.getNode().getName())
                 .toList();
 
-        if (path.get(2).matches("block")) blockRaycast(entity, context, path);
-        else if (path.get(2).matches("entity")) entityRaycast(entity, context, path);
-        return 1;
+        if (path.get(2).matches("block")) return blockRaycast(entity, context, path);
+        else if (path.get(2).matches("entity")) return entityRaycast(entity, context, path);
+        return 0;
     }
 
-    private void blockRaycast(Entity entity, CommandContext<ServerCommandSource> context, List<String> path) throws CommandSyntaxException {
+    private int blockRaycast(Entity entity, CommandContext<ServerCommandSource> context, List<String> path) throws CommandSyntaxException {
         double maxReachDistance = DoubleArgumentType.getDouble(context, "distance");
 
         World world = entity.getEntityWorld();
@@ -86,6 +86,8 @@ public class RaycastCommand implements Command<ServerCommandSource> {
 
         if (path.size() > 8 && path.get(8).equals("function")) blockRaycastFunction(context, hitResult, lookVec);
         else if (path.size() > 7 && path.get(7).equals("store")) blockRaycastStore(context, blockPos, hitResult, hitDistance);
+
+        return hitResult.getType() == BlockHitResult.Type.BLOCK ? 1 : 0; // Return if (hit)
     }
 
     private void blockRaycastFunction(CommandContext<ServerCommandSource> context, BlockHitResult hitResult, Vec3d lookVec) throws CommandSyntaxException {
@@ -115,7 +117,7 @@ public class RaycastCommand implements Command<ServerCommandSource> {
         editStoragePath(context, data);
     }
 
-    private void entityRaycast(Entity entity, CommandContext<ServerCommandSource> context, List<String> path) throws CommandSyntaxException {
+    private int entityRaycast(Entity entity, CommandContext<ServerCommandSource> context, List<String> path) throws CommandSyntaxException {
         double maxReachDistance = DoubleArgumentType.getDouble(context, "distance");
         Vec3d lookVec = entity.getRotationVec(1.0F); // Player's looking direction vector
         Vec3d rayStart = entity.getCameraPosVec(1.0F); // Player's eye position
@@ -134,6 +136,8 @@ public class RaycastCommand implements Command<ServerCommandSource> {
 
         if (path.size() > 7 && path.get(7).equals("function")) raycastEntityFunction(context, hitResult, lookVec);
         else if (path.size() > 6 && path.get(6).equals("store")) raycastEntityStore(context, hitPos, hitPos.distanceTo(rayStart), hitEntity);
+
+        return hitEntity!=null ? 1 : 0;
     }
 
     private void raycastEntityFunction(CommandContext<ServerCommandSource> context, EntityHitResult hitResult, Vec3d lookVec) throws CommandSyntaxException {

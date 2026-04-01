@@ -30,11 +30,13 @@ public class AnimationManager {
         }
     }
 
-    public static void stop(ArmorStandEntity entity) {
-        if (animationDataMap.get(entity) == null) return;
+    public static int stop(ArmorStandEntity entity) {
+        if (animationDataMap.get(entity) == null) return 0;
 
         entity.setYaw(animationDataMap.get(entity).startRotation);
         animationDataMap.remove(entity);
+
+        return 1;
     }
 
     public static void tick() {

@@ -11,8 +11,8 @@ More info on the file and folder structure in [Animation](../Systems/Animation.m
 
 ---
 ### (PLAY | STOP | GET)
-`play`: starts an animation on the selected entities
-`stop`: stops an entities current animation
+`play`: starts an animation on the selected entities<br>
+`stop`: stops an entities current animation<br>
 `get`: gets the data of an entities current animation and stores it in storage
 
 ---

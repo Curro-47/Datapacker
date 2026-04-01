@@ -25,9 +25,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AnimationCommand implements Command<ServerCommandSource> {
@@ -38,14 +36,14 @@ public class AnimationCommand implements Command<ServerCommandSource> {
                 .map(node -> node.getNode().getName())
                 .toList();
 
-        if (path.get(1).equals("play")) play(context);
-        if (path.get(1).equals("stop")) stop(context);
-        if (path.get(1).equals("get")) get(context);
+        if (path.get(1).equals("play")) return play(context);
+        if (path.get(1).equals("stop")) return stop(context);
+        if (path.get(1).equals("get")) return get(context);
 
-        return 1;
+        return 0;
     }
 
-    private void play(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int play(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         Collection<? extends Entity> entityRawCollection = EntityArgumentType.getEntities(context, "target");
         Collection<ArmorStandEntity> entityCollection = entityRawCollection.stream()
                 .filter(e -> e instanceof ArmorStandEntity)
@@ -54,21 +52,25 @@ public class AnimationCommand implements Command<ServerCommandSource> {
         Identifier animationPath = IdentifierArgumentType.getIdentifier(context, "animation path");
 
         AnimationManager.play(entityCollection, animationPath);
+        return 1;
     }
 
-    private void stop(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int stop(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         Collection<? extends Entity> entityRawCollection = EntityArgumentType.getEntities(context, "target");
         Collection<ArmorStandEntity> entityCollection = entityRawCollection.stream()
                 .filter(e -> e instanceof ArmorStandEntity)
                 .map(e -> (ArmorStandEntity)e)
                 .collect(Collectors.toSet());
 
-        for (ArmorStandEntity entity : entityCollection) AnimationManager.stop(entity);
+        int success = 0;
+        for (ArmorStandEntity entity : entityCollection) if(AnimationManager.stop(entity)==1) success=1;
+        return success;
     }
 
-    private void get(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        if (!(EntityArgumentType.getEntity(context, "target") instanceof ArmorStandEntity entity)) return;
+    private int get(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        if (!(EntityArgumentType.getEntity(context, "target") instanceof ArmorStandEntity entity)) return 0;
 
+        int success;
         NbtCompound data = new NbtCompound();
         try {
             AnimationReference reference = AnimationManager.animationDataMap.get(entity);
@@ -79,6 +81,8 @@ public class AnimationCommand implements Command<ServerCommandSource> {
             data.put("id", NbtString.of(reference.id.toString()));
             data.put("loop", NbtInt.of(animation.loop() ? 1 : 0));
             data.put("loop_start", NbtInt.of(animation.loop_start()));
+
+            success = 1;
         }
         catch (Exception e) {
             data.put("duration", NbtInt.of(0));
@@ -86,21 +90,27 @@ public class AnimationCommand implements Command<ServerCommandSource> {
             data.put("id", NbtString.of(""));
             data.put("loop", NbtInt.of(0));
             data.put("loop_start", NbtInt.of(0));
+
+            success = 0;
         }
 
         editStoragePath(context, data);
+        return success;
     }
 
     private void editStoragePath(CommandContext<ServerCommandSource> context, NbtCompound data) throws CommandSyntaxException {
-        Identifier storageId = IdentifierArgumentType.getIdentifier(context, "storage");
-        NbtPathArgumentType.NbtPath path = NbtPathArgumentType.getNbtPath(context, "path");
+        try {
+            Identifier storageId = IdentifierArgumentType.getIdentifier(context, "storage");
+            NbtPathArgumentType.NbtPath path = NbtPathArgumentType.getNbtPath(context, "path");
 
-        DataCommandStorage storage = context.getSource().getServer().getDataCommandStorage();
-        NbtCompound root = storage.get(storageId);
-        if (root == null) root = new NbtCompound();
+            DataCommandStorage storage = context.getSource().getServer().getDataCommandStorage();
+            NbtCompound root = storage.get(storageId);
+            if (root == null) root = new NbtCompound();
 
-        path.put(root, data);
-        storage.set(storageId, root);
+            path.put(root, data);
+            storage.set(storageId, root);
+        }
+        catch (Exception ignored) {}
     }
 
     public void register() {
@@ -113,6 +123,14 @@ public class AnimationCommand implements Command<ServerCommandSource> {
 
             ArgumentCommandNode<ServerCommandSource, ?> animationPath = CommandManager
                     .argument("animation path", IdentifierArgumentType.identifier())
+                    .suggests((context, builder) -> {
+                        final Set<String> animationIdSet = new HashSet<>();
+                        for (Identifier animationId : AnimationLoader.animations.keySet()) {
+                            animationIdSet.add(animationId.toString());
+                        }
+
+                        return net.minecraft.command.CommandSource.suggestMatching(animationIdSet, builder);
+                    })
                     .executes(this)
                     .build();
 
@@ -131,7 +149,7 @@ public class AnimationCommand implements Command<ServerCommandSource> {
 
             LiteralCommandNode<ServerCommandSource> animationGet = CommandManager
                     .literal("get")
-                    .then(CommandManager.argument("target", EntityArgumentType.entity())
+                    .then(CommandManager.argument("target", EntityArgumentType.entity()).executes(this)
                     .then(CommandManager.argument("storage", IdentifierArgumentType.identifier())
                     .then(CommandManager.argument("path", NbtPathArgumentType.nbtPath())
                     .executes(this))))

@@ -44,7 +44,7 @@ public class KeybindCommand implements Command<ServerCommandSource> {
         /// Get Arguments
         Identifier name = IdentifierArgumentType.getIdentifier(context, "name");
         String key = StringArgumentType.getString(context, "key");
-        KeybindType type = KeybindType.getFromString(path.get(5));
+        KeybindType type = KeybindType.fromString(path.get(5));
         List<Identifier> function = CommandFunctionArgumentType.getFunctions(context, "function")
                                         .stream()
                                         .map(CommandFunction::id).toList();
